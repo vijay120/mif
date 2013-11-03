@@ -47,22 +47,18 @@ currentWeights <- c(0.080796759,
 0.093530837,
 0.05707216)
 
-cols <- ncol(currentWeights) + 3
-
-
 
 eff.frontier <- function (returns, short="no", max.allocation=NULL, risk.premium.up=.5, risk.increment=.005){
+	
 	# return argument should be a m x n matrix with one column per security
 	# short argument is whether short-selling is allowed; default is no (short selling prohibited)
 	# max.allocation is the maximum % allowed for any one security (reduces concentration)
 	# risk.premium.up is the upper limit of the risk premium modeled (see for loop below)
 	# risk.increment is the increment (by) value used in the for loop
 	
-	covariance <- cov(returns)
-	
-	#print(covariance)
+	#covariance matrix was not positive definite
+	covariance <- cov(returns)	
 	covariance <- make.positive.definite(covariance)	
-	#print(covariance)	
 
 	n <- ncol(covariance)
 	
@@ -73,19 +69,19 @@ eff.frontier <- function (returns, short="no", max.allocation=NULL, risk.premium
 	
 	# Then modify the Amat and bvec if short-selling is prohibited
 	if(short=="no"){
-	Amat <- cbind(1, diag(n))
-	bvec <- c(bvec, rep(0, n))
+		Amat <- cbind(1, diag(n))
+		bvec <- c(bvec, rep(0, n))
 	}
 	# And modify Amat and bvec if a max allocation (concentration) is specified
 	if(!is.null(max.allocation)){
-	if(max.allocation > 1 | max.allocation <0){
-	stop("max.allocation must be greater than 0 and less than 1")
-	}
-	if(max.allocation * n < 1){
-	stop("Need to set max.allocation higher; not enough assets to add to 1")
-	}
-	Amat <- cbind(Amat, -diag(n))
-	bvec <- c(bvec, rep(-max.allocation, n))
+		if(max.allocation > 1 | max.allocation <0){
+		stop("max.allocation must be greater than 0 and less than 1")
+		}
+		if(max.allocation * n < 1){
+		stop("Need to set max.allocation higher; not enough assets to add to 1")
+		}
+		Amat <- cbind(Amat, -diag(n))
+		bvec <- c(bvec, rep(-max.allocation, n))
 	}
 	
 	# Calculate the number of loops based on how high to vary the risk premium and by what increment
@@ -134,17 +130,17 @@ eff.optimal.point <- eff[eff$sharpe==max(eff$sharpe),]
 eff.optimal.point
 
 # Color Scheme
- ealred  <- "#7D110C"
- ealtan  <- "#CDC4B6"
- eallighttan <- "#F7F6F0"
- ealdark  <- "#423C30"
+ealred  <- "#7D110C"
+ealtan  <- "#CDC4B6"
+eallighttan <- "#F7F6F0"
+ealdark  <- "#423C30"
 ggplot(eff, aes(x=Std.Dev, y=Exp.Return)) + geom_point(alpha=.1, color=ealdark) +
  geom_point(data=eff.optimal.point, aes(x=Std.Dev, y=Exp.Return, label=sharpe), color=ealred, size=5) +
-geom_point(result) + annotate(geom="text", x=std, y=expReturn, label=paste("Risk: ", round(std*100, digits=3),"\nReturn: ",
+geom_point(result) + annotate(geom="text", x=std, y=expReturn, label=paste("Risk: ", round(std, digits=3),"\nReturn: ",
  round(expReturn*100, digits=4),"%\nSharpe: ",
  round(sharpe*100, digits=2), "%", sep=""), hjust=0, vjust=1.2) +
  annotate(geom="text", x=eff.optimal.point$Std.Dev, y=eff.optimal.point$Exp.Return,
- label=paste("Risk: ", round(eff.optimal.point$Std.Dev*100, digits=3),"\nReturn: ",
+ label=paste("Risk: ", round(eff.optimal.point$Std.Dev, digits=3),"\nReturn: ",
  round(eff.optimal.point$Exp.Return*100, digits=4),"%\nSharpe: ",
  round(eff.optimal.point$sharpe*100, digits=2), "%", sep=""), hjust=0, vjust=1.2) +
  ggtitle("Efficient Frontier\nand Optimal Portfolio") + labs(x="Risk (standard deviation of portfolio variance)", y="Return") +
