@@ -25,27 +25,27 @@ stocks <- c('AAPL',
 'VONE',
 'VTWO')
 
-currentWeights <- c(0.080796759,
-0.072231243,
-0.052856677,
-0.040520345,
-0.130094855,
-0.011853133,
-0.009644557,
-0.011834489,
-0.050605374,
-0.031440556,
-0.011838684,
-0.060550259,
-0.057999404,
-0.034692438,
-0.094000985,
-0.025449511,
-0.048586814,
-0.011876283,
-0.01252464,
-0.093530837,
-0.05707216)
+currentWeights <- c(0.084535661,
+0.075859685,
+0.051705596,
+0.041228751,
+0.13347808,
+0.011634352,
+0.009523811,
+0.011009536,
+0.050100837,
+0.030617516,
+0.012351294,
+0.060067188,
+0.056218259,
+0.03428052,
+0.091623601,
+0.023289987,
+0.047540459,
+0.010953287,
+0.011982486,
+0.093793583,
+0.05820551)
 
 
 eff.frontier <- function (returns, short="no", max.allocation=NULL, risk.premium.up=.5, risk.increment=.005){
@@ -57,7 +57,7 @@ eff.frontier <- function (returns, short="no", max.allocation=NULL, risk.premium
 	# risk.increment is the increment (by) value used in the for loop
 	
 	#covariance matrix was not positive definite
-	covariance <- cov(returns)	
+	covariance <- cov(returns)
 	covariance <- make.positive.definite(covariance)	
 
 	n <- ncol(covariance)
@@ -112,8 +112,9 @@ eff.frontier <- function (returns, short="no", max.allocation=NULL, risk.premium
 returns <- getReturns(stocks, freq="month")
 covariance <- cov(returns$R)
 	
+	
 #print(covariance)
-covariance <- make.positive.definite(covariance)
+#covariance <- make.positive.definite(covariance)
 
 expReturn <- as.numeric(currentWeights %*% colMeans(returns$R))
 print(expReturn)
@@ -124,7 +125,7 @@ print(sharpe)
 
 result <- aes(std, expReturn, sharpe)
 
-eff <- eff.frontier(returns=returns$R, short="no", max.allocation=NULL, risk.premium.up=.5, risk.increment=.001)
+eff <- eff.frontier(returns=returns$R, short="no", max.allocation=NULL, risk.premium.up =.5, risk.increment=.001)
 
 eff.optimal.point <- eff[eff$sharpe==max(eff$sharpe),]
 eff.optimal.point
